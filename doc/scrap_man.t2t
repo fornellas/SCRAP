@@ -1,0 +1,43 @@
+SCRAP
+Fabio Pugliese Ornellas
+2005.02.09
+%!Target: man
+%!Options: -o scrap.1
+= NAME =
+SCRAP - Security Camera Recording APplication.
+= FEATURES =
+SCRAP is capable of working with any video4linux compatible device, supporring all of its documented features. It can grab frames from multiple inputs of a single device and also support working with multiple capture boards at the same time, giving user the advantage of a low-cost recording system.
+
+It has a very reliable motion detection system, recording only when movement happens and ignoring the rest, including light changes. So, in a tipical 24h recording cycle, you will have only a few hours of recorded video.
+
+Videos are recorded using XviD's MPEG-4 compression, witch is one of the best video codecs today. The generated AVIs should be playable on any AVI+MPEG4 capable video player (all modern video players are).
+
+There is also a recording archive management system, with alow the user keep archived only recent recordings, erasing the old ones. User can set to erase recordings older than a number of days, or set a maximum disk usage.
+
+Although SCRAP is a console application, it is full featured. It is intented to be run as a daemon, in the background, letting SCRAP doing the recording job without other systems users even notice it is running.
+= OPTIONS =
+Usage: scrap `[arguments]`
+
+Where arguments can be:
+== -c FILE ==
+Configuration file with device capture options. Can be set many times, each one for a different capture device (see also **-s** option).
+== -d ==
+Run as a daemon.
+== -h ==
+Help.
+== -l FILE ==
+Log file. Default to stdout without -d and null if -d.
+== -p DEVICE ==
+Print capabilities for cameras in DEVICE (eg. /dev/video).
+== -s ==
+Dump sample configuration file to standard output.
+== -v LEVEL ==
+Log verbose level.
+== -w ==
+Disable performance warnings (slow capture / full frame queue).
+= AUTHOR =
+SCRAP is free software under the GPL, and was written by:
+
+Fabio Pugliese Ornellas **<fabio.ornellas@gmail.com>**
+
+**<http://www.geocities.com/neofpo/>**

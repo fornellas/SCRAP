@@ -1,0 +1,10 @@
+- salve jpeg screenshots
+RELEASE 1.0.1
+- make it possible to run at system's maximum speed
+- log management system
+RELEASE 1.0.2
+- optimize derivate_frame()
+- change threshold to float
+- remake store_var() in read_conf.c in a "non-brute-force-method" way
+- make destroy_handler for all modules
+RELEASE ?.?.?

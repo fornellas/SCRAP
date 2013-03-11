@@ -1,0 +1,38 @@
+SCRAP
+-----
+
+* What it is
+
+SCRAP (Security Camera Recording APplication) is a security camera recording application for Linux.
+
+* Capabilities
+
+SCRAP is capable of working with any video4linux compatible device,
+supporring all of its documented features. It can grab frames from multiple
+inputs of a single device and also support working with multiple capture
+boards at the same time, giving user the advantage of a low-cost recording
+system.
+
+It has a very reliable motion detection system, recording only when movement
+happens and ignoring the rest, including light changes. So, in a tipical 24h
+recording cycle, you will have only a few hours of recorded video.
+
+Videos are recorded using XviD's MPEG-4 compression, witch is one of the best
+video codecs today. The generated AVIs should be playable on any AVI+MPEG4
+capable video player (all modern video players are).
+
+There is also a recording archive management system, with alow the user keep
+archived only recent recordings, erasing the old ones. User can set to erase
+recordings older than a number of days, or set a maximum disk usage.
+
+* Versioning system
+
+SCRAP versions are made of 3 numbers: MAJOR.MINOR.PATCH
+ - MAJOR:
+   Is incremented every time the program has changed significantly, changing
+   its working behavior.
+ - MINOR:
+   Is incremented when additions have been made, including new features.
+ - PATCH:
+   Is incremented every time some bug is fixed.
+The first public release is 1.0.0.

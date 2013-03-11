@@ -1,0 +1,123 @@
+SCRAP: User's Guide
+Fabio Pugliese Ornellas, fabio.ornellas@gmail.com
+
+%! Target: html
+%! Options: -n --mask-email --toc --toc-level=6 --lang English
+= Introduction =
+== What it is ==
+SCRAP (Security Camera Recording APplication) is a security camera recording application for Linux. It is free software under the terms of the GPL.
+== Capabilities ==
+SCRAP is capable of working with any video4linux compatible device, supporring all of its documented features. It can grab frames from multiple inputs of a single device and also support working with multiple capture boards at the same time, giving user the advantage of a low-cost recording system.
+
+It has a very reliable motion detection system, recording only when movement happens and ignoring the rest, including light changes. So, in a tipical 24h recording cycle, you will have only a few hours of recorded video.
+
+Videos are recorded using XviD's MPEG-4 compression, witch is one of the best video codecs today. The generated AVIs should be playable on any AVI+MPEG4 capable video player (all modern video players are).
+
+There is also a recording archive management system, with alow the user keep archived only the recent recordings, erasing the old ones. User can set to erase recordings older than a number of days, or set a maximum disk usage.
+
+Although SCRAP is a console application, it is full featured. It is intented to be run as a daemon, in the background, letting SCRAP doing the recording job without other systems users even notice it is running.
+== Versioning system ==
+SCRAP versions are made of 3 numbers: MAJOR.MINOR.PATCH
+- MAJOR: Is incremented every time the program has changed significantly, changing its working behavior.
+- MINOR: Is incremented when additions have been made, including new features.
+- PATCH: Is incremented every time some bug is fixed.
+
+
+The first public release is 1.0.0.
+== Releases ==
+- **2005.02.10 - 1.0.0**: first release.
+
+
+= Usage =
+
+SCRAP is a console application. For now, it has no GUIs (Graphic User Interface), but this is not a bad feature. You must create one or more configuration files (one for each capture board) containing informations such as "from witch input to capture images" or "the size of the frames (320x240, 640x480, etc)". SCRAP has a built in configuration file example, witch can be obtained with:
+---
+$ scrap -s > example-capture.conf
+---
+Then you edit `example-capture.conf` to fit your needs. It is all well commented. There is no mistery. Take a look at the next section to get a better explanation about the options.
+== Configuration ==
+An ordinary configuration, will have almost 150 parameters. But do not worry. Most of them are automaticaly set to default values, witch are good to most users. So, you must concentrate in the few relevant settings. So, generate an example file, as explained in the previous section, and change it to fit your needs.
+
+Here are the important things you must configure:
+= **What to capture**: The video4linux device to use and set from witch input to get the images. Check the `[Capture]` section and `Input` setings, into the `[Camera]` section.
+= **Frame size**: Sets the resolution of the recorded movie.
+= **Motion detection**: Set up the motion detection algorithm. You must tune it well to get good results. The most important parameters are `threshold` and `noise`. Read the section about motion detection in this document, to understand it better.
+= **Recording archive**: This is the greatest feature of SCRAP. It is possible to keep an archive of the recorded videos and set limits to it. So, you set up it one time, and recording will happen without the need of intervention. You can limit the archive by its size or by date, keeping the last X days archived.
+
+
+Remember it is **not** necessary to set up **every** parameter. Most defaults are good for most people. A minimal configuration file require only a few lines.
+
+= Features =
+== Capture ==
+Capture can be done from any video4linux compatible device. All documented driver features are supported.
+
+You can list your device's capabilities, running:
+---
+$ scrap -p /dev/video
+---
+Different cards may have different settings. You must see witch settings make sense to your hardware.
+=== Device ===
+ If you have more than one capture board in your system, it is necessary to set up witch one you will use (eg. `/dev/video0`, `/dev/video1`).
+=== Channel ===
+Capture boards can have multiple "inputs" (like Television, S-Video, etc). In SCRAP, each of this inputs is called **channels**. The first one will be 0, the second 1 and so on. Please do not make confusion with TV channels and channel. TV channels are a **tuner** setting.
+
+Each channel may have a "norm" setting. It sets the channel's signal system, like PAL, NTSC etc.
+=== Tuner ===
+Each channel can have none, one or more tuners atached to it. If you have a tuner, you can set to use it, set its signal system (PAL, NTSC etc) and the tunning frequecy (this will let you to select the TV channel).
+
+TV channel numbers are unsuported, you must explicity set the channel's frequency instead of the number. Different regions of the world use different channel/frequency tables. So channel 3's frequency in US, will be differnt from channel 3's frequency in Brazil for example.
+=== Frame size ===
+You must set up the resolution of the video captured. Some resolutions are:
+| VCD (PAL/SECAM) | 352x288 |
+| VCD (NTSC) | 352x240 |
+| SVCD (PAL/SECAM) | 480x576 |
+| SVCD (NTSC) | 480x480 |
+| DVD (most common) | 720x480 |
+It is possible to software crop the frame after capture. Usually captured signal comes with a black border. You can crop it, to get a better video encoding.
+
+Try to set up a frame size, with dimentions multiple of 8, like 352x288, and avoid using other sizes, like 351x288. Video encoding depends a **lot* of blocks of 8x8 pixels. You will get better encoding results if you follow this rule.
+=== Image ===
+You can capture in color or grayscale, and set up brightness, hue, colour, contrast and whiteness (grayscale only).
+==  Motion detection ==
+SCRAP has a very reliable motion detection system. It is possible to record only when movement happens and ignore when there is no motion.
+
+Motion is detected always between 2 frames: the current frame, and a comparation frame. The current frame, is the last frame captured ("now"); and the comparation frame is an older frame. You can set when the comparation frame will be replaced by a new one. Every time motion is detected, is is replaced by the current frame. You can force its replacement, by setting a time to force it to be obsolete.
+
+There are 2 motion detection algorithms: **Difference** and **Derivate Difference**.
+
+The **Difference** algorithm is the faster and "100% safe". "Safe" because it detects motion by substracting the current frame from the comparation frame. So, **any** changes in the image is considered motion, including small light changes. You will probably get a lot on unwanted frames recorded, or to fix this, you will be forced to set the obsolete time of the comparation frame to a small value, decreasing security (slow changes in the image will not be detected).
+
+The **Derivate Difference** algorithm comes to solve this problem. It is still **very** secure, but it deals very well with ligh changes. So, you record **only** what is needed, nothing more. It also lets you set the obsolete time of the comparation frame to infinite, giving you more security in the motion detection process.
+
+Both algorithms, have 2 parameters, that **need** to be adjusted for every different camera. They are **noise** and **threshold**. Noise, sets a noise level for the image, should be a low value. The threshold, sets a percentage or the image that must be different, to consider motion. Must be a VERY low value (close to 0.3%-0.5%).
+
+There are also other parameters to tune the algorithms. They remove some parts of the algorithms to speed up things. It is better to use full versions of the algorithms, but if your system is slow, reduce it.
+
+== Memory usage (frame buffer) ==
+SCRAP has a built in frame buffer. It buffers frames into memory, in a queue, that is then processed. If system is slow for a moment, the queue grows, and no frames are lost. When the system is fast again, the queue is processed. If the frame buffer gets full, so, no more frames are captuerd until buffer is not full anymore. In this situation, you have performance problems. Try decreasing the capture frame rate or making the motion detection and encoding algorithms faster (see corresponding sections).
+== Time stamp ==
+The name of the camera, and the time that frame was capture are written over each captured frame. Because recordings are non linear time videos, you must know when a certain frame was captured. This is the answer.
+== Video encoding==
+Video encoding is done using XviD, one of the best video codecs today. The paramers are set to its best, letting user set only the video endoding algorithm quality, and the quantizer. The quantizer sets the quality of the compression. The smaller, the best. Good values are 3 or 4.
+
+Video is saved into AVI files. It is possible set the video frame rate (not capturing frame rate) and the maximum length of each AVI.
+== Recording archive ==
+SCRAP makes an archive of the recorded videos. You set up where so save the videos, set limits to the archive, and SCRAP keeps managing it for you.
+
+You can limit the archive by size, setting a limit in MegaBytes for it. You can also set a limit by date, so that recordings older than a set up number of days are erased.
+= Author =
+SCRAP was written entirely by:
+
+Fabio Pugliese Ornellas, [fabio.ornellas@gmail.com fabio.ornellas@gmail.com]
+
+The last version can be obtained from: [http://www.geocities.com/neofpo/ http://www.geocities.com/neofpo/]
+== Bugs ==
+If you find **any** bugs or have problems running SCRAP, please contact me.
+= Licence & Warranty =
+(C)2004 Fabio Puglise Ornellas
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Library General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
